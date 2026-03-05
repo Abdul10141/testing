@@ -1,0 +1,54 @@
+name: Multi Environment Deployment
+
+on:
+  push:
+    branches:
+      - dev
+      - uat
+      - prod
+
+jobs:
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Identify Branch
+      run: |
+        echo "Branch Name: ${{ github.ref_name }}"
+
+    - name: Set Environment Variables
+      run: |
+        if [[ "${{ github.ref_name }}" == "dev" ]]; then
+          echo "ENVIRONMENT=dev" >> $GITHUB_ENV
+        elif [[ "${{ github.ref_name }}" == "uat" ]]; then
+          echo "ENVIRONMENT=uat" >> $GITHUB_ENV
+        elif [[ "${{ github.ref_name }}" == "prod" ]]; then
+          echo "ENVIRONMENT=prod" >> $GITHUB_ENV
+        fi
+
+    - name: Print Environment
+      run: echo "Deploying to $ENVIRONMENT"
+
+    - name: Build Application
+      run: |
+        echo "Building application..."
+
+    - name: Deploy to Dev
+      if: github.ref_name == 'dev'
+      run: |
+        echo "Deploying to DEV environment"
+
+    - name: Deploy to UAT
+      if: github.ref_name == 'uat'
+      run: |
+        echo "Deploying to UAT environment"
+
+    - name: Deploy to Production
+      if: github.ref_name == 'prod'
+      run: |
+        echo "Deploying to PRODUCTION environment"
